@@ -34,7 +34,10 @@ src/
       ├─ RepeatSync.tsx      tool UI
       ├─ syncEngine.ts       pure calculation logic
       ├─ syncEngine.test.ts  unit tests (incl. the PRD §6.3 worked example)
-      └─ summary.ts          plain-text summary builder
+      ├─ summary.ts          plain-text summary builder
+      ├─ dmdData.ts          loader for the bundled dm+d subset
+      └─ data/dmd.json       bundled dm+d medication subset (sample by default)
+scripts/build-dmd.mjs        build-time dm+d ingestion from NHS TRUD
 .github/workflows/deploy.yml GitHub Pages CI
 PRD.md                       product requirements
 ```
@@ -63,3 +66,25 @@ which tests, builds and publishes to GitHub Pages at `/ClinicalPharmTools/`.
 
 The base path is configurable. If the suite later moves to a custom domain or another host
 served from the root, build with `BASE_PATH=/ npm run build` — no code change needed.
+
+## Medication data (NHS dm+d)
+
+The medication-name autocomplete and pack-size hints are powered by the NHS **dm+d**
+(Dictionary of Medicines and Devices), ingested **at build time** — never at runtime — so the
+app stays fully client-side and offline, with no embedded API key (PRD §7–§8).
+
+- `src/tools/repeat-sync/data/dmd.json` is committed as a small **sample** so the app builds
+  and runs without any credentials.
+- `npm run build:dmd` fetches the latest dm+d release from **NHS TRUD** (item 24) and overwrites
+  that file with the full extract. It requires a free TRUD account subscribed to dm+d and a key:
+
+  ```bash
+  TRUD_API_KEY=your_key npm run build:dmd
+  ```
+
+- In CI, add the key as the `TRUD_API_KEY` repository secret; the deploy workflow refreshes the
+  data before building. Without the secret it no-ops and ships the sample.
+
+> dm+d is largely Open Government Licence v3.0, but its identifiers are SNOMED CT codes — confirm
+> redistribution terms before publishing a full derived extract on a public site. The bundle holds
+> only product names and pack sizes (no daily-dose data, which dm+d does not contain).

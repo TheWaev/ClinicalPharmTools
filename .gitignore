@@ -5,6 +5,10 @@ dist-ssr
 .vite
 coverage
 
+# dm+d ingestion working files (the slim output is committed at
+# src/tools/repeat-sync/data/dmd.json; the raw download/extract is not)
+.dmd-cache
+
 # Editor / OS
 .DS_Store
 .vscode/*
