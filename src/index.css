@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+  /* Visible focus styles for keyboard users (WCAG 2.1 AA). */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-blue-600;
+  }
+}
+
+@media print {
+  /* Hide interactive chrome; show only the results/summary when printing. */
+  .no-print {
+    display: none !important;
+  }
+}
