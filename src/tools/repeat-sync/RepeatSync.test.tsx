@@ -1,8 +1,17 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen, within, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import RepeatSync from './RepeatSync';
+
+// Decouple the UI tests from the bundled dm+d dataset, which is refreshed from
+// TRUD weekly (so real pack sizes/names change). These fixtures keep the
+// datalist + pack-size-prefill behaviour deterministic.
+vi.mock('./dmdData', () => ({
+  medicationNames: ['Amlodipine 5mg tablets', 'Ramipril 5mg capsules'],
+  packSizesFor: (name: string) =>
+    name.trim().toLowerCase() === 'amlodipine 5mg tablets' ? [28] : [],
+}));
 
 function renderTool() {
   return render(
