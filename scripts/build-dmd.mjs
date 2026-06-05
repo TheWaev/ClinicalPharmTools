@@ -80,6 +80,15 @@ export function collectRecords(node, predicate, out = []) {
 
 const isActive = (rec) => String(rec.INVALID ?? '') !== '1';
 
+// dm+d VMP prescribing status (PRES_STATCD): keep only products valid to
+// prescribe in primary care — 0001 (valid) and 0009 (caution, AMP-level
+// advised). Exclude 0002 (invalid in primary care), 0004 (never valid as a
+// VMP), etc. If the field is absent we keep the record, so a parsing change can
+// never silently wipe the dataset.
+const PRESCRIBABLE_STATUS = new Set(['0001', '0009']);
+const isPrescribable = (rec) =>
+  rec.PRES_STATCD == null || PRESCRIBABLE_STATUS.has(String(rec.PRES_STATCD));
+
 /** Build [{ name, packSizes }] from the VMP (names) + VMPP (pack sizes) files. */
 export function extractItems(xmls, parser = xmlParser) {
   // Match the virtual files; exclude the actual/branded (amp) and pack (vmpp) ones.
@@ -98,6 +107,7 @@ export function extractItems(xmls, parser = xmlParser) {
   const nameByVpid = new Map();
   for (const v of vmpRecords) {
     if (!isActive(v)) continue; // skip discontinued products
+    if (!isPrescribable(v)) continue; // keep only primary-care prescribable VMPs
     nameByVpid.set(String(v.VPID), String(v.NM));
   }
 
@@ -123,7 +133,12 @@ export function extractItems(xmls, parser = xmlParser) {
     items.push({ name, packSizes: packs });
   }
   items.sort((a, b) => a.name.localeCompare(b.name));
-  return { items, vmpCount: nameByVpid.size, packCount: packsByVpid.size };
+  return {
+    items,
+    vmpCount: nameByVpid.size,
+    packCount: packsByVpid.size,
+    rawVmpCount: vmpRecords.length,
+  };
 }
 
 async function main(apiKey) {
@@ -155,8 +170,10 @@ async function main(apiKey) {
   // 3. Extract XML (handles nested zips) and parse.
   const xmls = collectXml(archive);
   console.log(`[build-dmd] Extracted ${xmls.length} XML file(s)`);
-  const { items, vmpCount, packCount } = extractItems(xmls);
-  console.log(`[build-dmd] VMPs (active named products): ${vmpCount}`);
+  const { items, vmpCount, packCount, rawVmpCount } = extractItems(xmls);
+  console.log(
+    `[build-dmd] VMPs: ${vmpCount} prescribable kept of ${rawVmpCount} named (dropped ${rawVmpCount - vmpCount})`,
+  );
   console.log(`[build-dmd] Products with pack sizes: ${packCount}`);
   if (items.length === 0) {
     throw new Error('Parsed 0 medications — the release layout may have changed; inspect file names.');

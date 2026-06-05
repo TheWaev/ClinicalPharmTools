@@ -66,6 +66,24 @@ describe('dm+d parser', () => {
     expect(items).toHaveLength(3); // Amlodipine, Bigid, Ramipril
   });
 
+  it('keeps only primary-care prescribable VMPs (PRES_STATCD 0001/0009)', () => {
+    const vmp = `<?xml version="1.0"?>
+<VIRTUAL_MED_PRODUCTS><VMPS>
+  <VMP><VPID>1</VPID><NM>Valid prescribable tablets</NM><PRES_STATCD>0001</PRES_STATCD></VMP>
+  <VMP><VPID>2</VPID><NM>Caution AMP-level tablets</NM><PRES_STATCD>0009</PRES_STATCD></VMP>
+  <VMP><VPID>3</VPID><NM>Invalid in primary care tablets</NM><PRES_STATCD>0002</PRES_STATCD></VMP>
+  <VMP><VPID>4</VPID><NM>Never valid as VMP tablets</NM><PRES_STATCD>0004</PRES_STATCD></VMP>
+  <VMP><VPID>5</VPID><NM>No status field tablets</NM></VMP>
+</VMPS></VIRTUAL_MED_PRODUCTS>`;
+    const { items } = extractItems(collectXml(zipOf({ 'f_vmp2_x.xml': vmp })));
+    const names = items.map((i) => i.name);
+    expect(names).toContain('Valid prescribable tablets'); // 0001
+    expect(names).toContain('Caution AMP-level tablets'); // 0009
+    expect(names).toContain('No status field tablets'); // absent -> kept (safety)
+    expect(names).not.toContain('Invalid in primary care tablets'); // 0002
+    expect(names).not.toContain('Never valid as VMP tablets'); // 0004
+  });
+
   it('handles nested zips when collecting XML', () => {
     const inner = zipOf({ 'f_vmp2_x.xml': VMP_XML, 'f_vmpp2_x.xml': VMPP_XML });
     const outer = new AdmZip();

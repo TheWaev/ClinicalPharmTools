@@ -90,7 +90,9 @@ app stays fully client-side and offline, with no embedded API key (PRD §7–§8
   ```
 
 The parser reads only the **virtual** products — VMP (generic names) and VMPP (generic pack
-sizes); the actual/branded products (AMP/AMPP) are ignored. Its logic is unit-tested in
+sizes); the actual/branded products (AMP/AMPP) are ignored. It also keeps only VMPs that are
+**prescribable in primary care** (`PRES_STATCD` 0001/0009), which both slims the bundle and avoids
+suggesting non-prescribable items. Its logic is unit-tested in
 [scripts/build-dmd.test.mjs](scripts/build-dmd.test.mjs).
 
 > dm+d is largely Open Government Licence v3.0, but its identifiers are SNOMED CT codes — confirm
