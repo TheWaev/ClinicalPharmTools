@@ -4,11 +4,11 @@ import react from '@vitejs/plugin-react';
 
 // The public base path.
 //
-// GitHub Pages serves this project at https://<user>.github.io/ClinicalPharmTools/,
-// so the default base is '/ClinicalPharmTools/'. When the suite later moves to a
-// custom domain or a different host served from the root, set BASE_PATH=/ at build
-// time (e.g. `BASE_PATH=/ npm run build`) — no code change needed.
-const base = process.env.BASE_PATH ?? '/ClinicalPharmTools/';
+// Default is '/' — the app is served from the domain root (Cloudflare Pages,
+// custom domains, Docker/nginx). If you ever serve it from a sub-path (e.g.
+// GitHub Pages at /ClinicalPharmTools/), set BASE_PATH at build time:
+// `BASE_PATH=/ClinicalPharmTools/ npm run build` — no code change needed.
+const base = process.env.BASE_PATH ?? '/';
 
 export default defineConfig({
   base,

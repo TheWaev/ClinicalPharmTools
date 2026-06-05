@@ -39,8 +39,7 @@ src/
       └─ data/dmd.json       bundled dm+d medication subset (sample by default)
 scripts/build-dmd.mjs        build-time dm+d ingestion from NHS TRUD
 scripts/build-dmd.test.mjs   parser unit tests (synthetic dm+d fixture)
-.github/workflows/deploy.yml     GitHub Pages CI
-.github/workflows/update-dmd.yml weekly dm+d refresh from TRUD
+.github/workflows/update-dmd.yml weekly dm+d refresh from TRUD (auto-deploys via Cloudflare)
 PRD.md                       product requirements
 ```
 
@@ -61,13 +60,32 @@ npm run build    # typecheck + production build
 npm run preview  # preview the production build
 ```
 
-## Deployment
+## Deployment (Cloudflare Pages)
 
-Pushes to `main` trigger [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml),
-which tests, builds and publishes to GitHub Pages at `/ClinicalPharmTools/`.
+Hosted on **Cloudflare Pages** (free, served from the domain root). The app is a static SPA with
+client-side Supabase auth, so the host only serves files.
 
-The base path is configurable. If the suite later moves to a custom domain or another host
-served from the root, build with `BASE_PATH=/ npm run build` — no code change needed.
+**One-off setup:** in Cloudflare → Pages → *Connect to Git*, pick this repo and set:
+
+| Setting | Value |
+|---|---|
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| Environment variables | `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (from your Supabase project) |
+
+Node version is pinned by [`.nvmrc`](.nvmrc) (20). The base path defaults to `/`; no `BASE_PATH`
+override is needed for Cloudflare. Security headers are set in [`public/_headers`](public/_headers).
+
+After that, **every push to `main` auto-deploys**. The weekly
+[Update dm+d data](.github/workflows/update-dmd.yml) workflow commits a refreshed `dmd.json`, and
+that push triggers a Cloudflare rebuild automatically.
+
+> Want stronger "internal only"? Put **Cloudflare Access** in front of the Pages project for
+> edge-level login on top of the in-app Supabase auth — no code change.
+
+Other hosts work too — it's plain static files. For a sub-path host (e.g. GitHub Pages) build with
+`BASE_PATH=/ClinicalPharmTools/ npm run build`. A `Dockerfile` (build → nginx) is the path for
+self-hosting on an internal server behind your VPN.
 
 ## Authentication
 
