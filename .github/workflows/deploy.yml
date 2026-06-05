@@ -32,14 +32,9 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Refresh dm+d data
-        # No-ops and keeps the committed sample if the TRUD_API_KEY secret is
-        # not configured, so the build never fails for a missing key.
-        env:
-          TRUD_API_KEY: ${{ secrets.TRUD_API_KEY }}
-        run: npm run build:dmd
-
       - name: Build
+        # Uses the committed src/tools/repeat-sync/data/dmd.json, which the
+        # "Update dm+d data" workflow keeps fresh from TRUD.
         run: npm run build
         # BASE_PATH defaults to '/ClinicalPharmTools/' in vite.config.ts.
         # If this repo is ever renamed or moved to a custom domain, override here.

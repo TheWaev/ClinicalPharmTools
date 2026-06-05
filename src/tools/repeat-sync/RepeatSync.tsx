@@ -557,7 +557,9 @@ function ResultRow({ r }: { r: MedResult }) {
       <td className="py-2 pr-3">
         {calculated ? (
           // Bridging quantity is the visually dominant figure per PRD §9.
-          <span className="text-xl font-bold tabular-nums text-slate-900">{r.bridgingQty}</span>
+          <span className="text-2xl font-extrabold tabular-nums text-slate-900">
+            {r.bridgingQty}
+          </span>
         ) : (
           <span className="text-slate-400">—</span>
         )}

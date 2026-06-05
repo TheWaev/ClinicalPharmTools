@@ -38,7 +38,9 @@ src/
       ├─ dmdData.ts          loader for the bundled dm+d subset
       └─ data/dmd.json       bundled dm+d medication subset (sample by default)
 scripts/build-dmd.mjs        build-time dm+d ingestion from NHS TRUD
-.github/workflows/deploy.yml GitHub Pages CI
+scripts/build-dmd.test.mjs   parser unit tests (synthetic dm+d fixture)
+.github/workflows/deploy.yml     GitHub Pages CI
+.github/workflows/update-dmd.yml weekly dm+d refresh from TRUD
 PRD.md                       product requirements
 ```
 
@@ -75,15 +77,21 @@ app stays fully client-side and offline, with no embedded API key (PRD §7–§8
 
 - `src/tools/repeat-sync/data/dmd.json` is committed as a small **sample** so the app builds
   and runs without any credentials.
-- `npm run build:dmd` fetches the latest dm+d release from **NHS TRUD** (item 24) and overwrites
-  that file with the full extract. It requires a free TRUD account subscribed to dm+d and a key:
+- The **Update dm+d data** GitHub Action ([update-dmd.yml](.github/workflows/update-dmd.yml))
+  downloads the latest dm+d release from **NHS TRUD** (item 24), converts it to the slim JSON,
+  commits the change back to the repo, and triggers a deploy. It runs weekly and on demand
+  (Actions → *Update dm+d data* → *Run workflow*). It needs a `TRUD_API_KEY` repository secret
+  (a free TRUD account subscribed to dm+d); without it the run no-ops and commits nothing.
+- The deploy workflow just bundles whatever `dmd.json` is committed — it does not call TRUD.
+- To generate the data locally:
 
   ```bash
   TRUD_API_KEY=your_key npm run build:dmd
   ```
 
-- In CI, add the key as the `TRUD_API_KEY` repository secret; the deploy workflow refreshes the
-  data before building. Without the secret it no-ops and ships the sample.
+The parser reads only the **virtual** products — VMP (generic names) and VMPP (generic pack
+sizes); the actual/branded products (AMP/AMPP) are ignored. Its logic is unit-tested in
+[scripts/build-dmd.test.mjs](scripts/build-dmd.test.mjs).
 
 > dm+d is largely Open Government Licence v3.0, but its identifiers are SNOMED CT codes — confirm
 > redistribution terms before publishing a full derived extract on a public site. The bundle holds
