@@ -23,8 +23,10 @@ interface AuthContextValue {
   email: string | null;
   /** Whether an admin has approved this account. null = still loading. */
   approved: boolean | null;
+  /** Whether the signed-in user is an administrator. */
+  isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<AuthResult>;
-  signUp: (email: string, password: string) => Promise<AuthResult>;
+  signUp: (email: string, password: string, practice: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
   /** Re-check approval status (e.g. from the "pending approval" screen). */
   refreshApproval: () => Promise<void>;
@@ -36,6 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [approved, setApproved] = useState<boolean | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     if (!supabase) {
@@ -57,26 +60,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshApproval = useCallback(async () => {
     if (!supabase || !userId) {
       setApproved(null);
+      setIsAdmin(false);
       return;
     }
+    // select('*') is robust to the is_admin/practice columns not existing yet
+    // (before admin.sql is run) — it won't error on a missing column.
     const { data, error } = await supabase
       .from('profiles')
-      .select('approved')
+      .select('*')
       .eq('id', userId)
       .maybeSingle();
     if (error) {
       // Fail closed: if the profiles table/RLS isn't set up, treat as pending.
       console.warn('[auth] approval check failed:', error.message);
       setApproved(false);
+      setIsAdmin(false);
       return;
     }
     setApproved(data?.approved === true);
+    setIsAdmin(data?.is_admin === true);
   }, [userId]);
 
   // Re-check approval whenever the signed-in user changes.
   useEffect(() => {
     if (!userId) {
       setApproved(null);
+      setIsAdmin(false);
       return;
     }
     setApproved(null); // loading
@@ -90,6 +99,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       email: session?.user?.email ?? null,
       approved,
+      isAdmin,
       refreshApproval,
 
       async signIn(email, password) {
@@ -98,13 +108,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: error?.message ?? null };
       },
 
-      async signUp(email, password) {
+      async signUp(email, password, practice) {
         if (!supabase) return { error: 'Authentication is not configured.' };
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
+            data: { practice },
           },
         });
         if (error) return { error: error.message };
@@ -115,7 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await supabase?.auth.signOut();
       },
     };
-  }, [loading, session, approved, refreshApproval]);
+  }, [loading, session, approved, isAdmin, refreshApproval]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

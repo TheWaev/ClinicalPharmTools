@@ -1,9 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { PillIcon, SignOutIcon } from './icons';
+import { PillIcon, SignOutIcon, UsersIcon } from './icons';
 import { useAuth } from '../auth/AuthContext';
 
 export default function Header() {
-  const { email, signOut } = useAuth();
+  const { email, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
 
   async function handleSignOut() {
@@ -34,6 +34,15 @@ export default function Header() {
           >
             All tools
           </Link>
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+            >
+              <UsersIcon className="h-4 w-4" />
+              <span className="hidden sm:inline">Admin</span>
+            </Link>
+          )}
           {email && (
             <>
               <span className="hidden max-w-[14rem] truncate text-xs text-slate-500 md:inline">

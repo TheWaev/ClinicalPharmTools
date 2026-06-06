@@ -28,4 +28,7 @@ export {
   CircleNotch as SpinnerIcon,
   BookOpenText as BookIcon,
   Hourglass as PendingIcon,
+  Buildings as PracticeIcon,
+  UsersThree as UsersIcon,
+  XCircle as RevokeIcon,
 } from '@phosphor-icons/react';

@@ -11,6 +11,7 @@ import {
   SpinnerIcon,
   AlertIcon,
   CheckIcon,
+  PracticeIcon,
 } from '../components/icons';
 
 const MIN_PASSWORD = 8;
@@ -19,6 +20,7 @@ export default function Signup() {
   const { session, signUp } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [practice, setPractice] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -37,9 +39,13 @@ export default function Signup() {
       setError(`Password must be at least ${MIN_PASSWORD} characters.`);
       return;
     }
+    if (practice.trim() === '') {
+      setError('Enter your practice or PCN.');
+      return;
+    }
 
     setBusy(true);
-    const { error, needsEmailConfirmation } = await signUp(email, password);
+    const { error, needsEmailConfirmation } = await signUp(email, password, practice.trim());
     setBusy(false);
     if (error) setError(error);
     else if (needsEmailConfirmation) setDone(true);
@@ -111,8 +117,25 @@ export default function Signup() {
           </div>
         </label>
 
+        <label className="block">
+          <span className="text-sm font-medium text-slate-700">Practice / PCN</span>
+          <div className="relative mt-1">
+            <PracticeIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              autoComplete="organization"
+              required
+              value={practice}
+              onChange={(e) => setPractice(e.target.value)}
+              placeholder="e.g. your practice name or Bromley PCN"
+              className={authInputCls}
+            />
+          </div>
+        </label>
+
         <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
-          Only {ALLOWED_DOMAINS_LABEL} email addresses can register.
+          Only {ALLOWED_DOMAINS_LABEL} email addresses can register. New accounts are reviewed
+          before access is granted.
         </p>
 
         <button

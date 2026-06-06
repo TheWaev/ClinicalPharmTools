@@ -94,7 +94,9 @@ three layers:
 1. **Domain** — only **@nhs.net** / **@abtrace.co** can register (client check + server trigger).
 2. **Email confirmation** — the user must click a link sent to their address before they can sign in.
 3. **Admin approval** — a new account stays on a "pending approval" screen until an admin approves
-   it (`profiles.approved`). See [`supabase/approvals.sql`](supabase/approvals.sql).
+   it. Admins approve from an in-app **Admin → Users** page (or the Supabase table). Sign-up also
+   captures the user's **practice / PCN**, shown in the approval list. See
+   [`supabase/approvals.sql`](supabase/approvals.sql) and [`supabase/admin.sql`](supabase/admin.sql).
 
 There is no backend to run — Supabase handles the user store, password hashing, email confirmation
 and sessions.
@@ -108,10 +110,11 @@ and sessions.
 1. Create a Supabase project — choose an **EU/London region** (staff-email residency).
 2. **Auth → Providers → Email:** enable it with **Confirm email** on.
 3. **Auth → URL Configuration:** set the Site URL + redirect URLs to your deployed URL.
-4. **SQL editor:** run [`supabase/allowed-domains.sql`](supabase/allowed-domains.sql) (domain
-   enforcement) and [`supabase/approvals.sql`](supabase/approvals.sql) (the approval gate).
-   Bootstrap the first admin by signing up, confirming your email, then setting your row's
-   `approved` to `true` in **Table editor → profiles**. Approve everyone else there too.
+4. **SQL editor:** run, in order, [`supabase/allowed-domains.sql`](supabase/allowed-domains.sql)
+   (domain enforcement), [`supabase/approvals.sql`](supabase/approvals.sql) (approval gate), and
+   [`supabase/admin.sql`](supabase/admin.sql) (admin role + practice column + policies).
+   `admin.sql` bootstraps the first admin — edit the email at the bottom to your own first. After
+   that, approve everyone else from the in-app **Admin → Users** page.
 5. **Project Settings → API:** copy the **Project URL** and **anon public key** into env vars:
 
    ```bash

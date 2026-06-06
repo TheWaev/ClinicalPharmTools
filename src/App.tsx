@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import NotFound from './pages/NotFound';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Admin from './pages/Admin';
 import { AuthProvider } from './auth/AuthContext';
 import RequireAuth from './auth/RequireAuth';
 import { availableTools } from './tools/registry';
@@ -33,6 +34,7 @@ export default function App() {
             return <Route key={tool.slug} path={`/tools/${tool.slug}`} element={<Tool />} />;
           })}
           <Route path="/tools" element={<Navigate to="/" replace />} />
+          <Route path="/admin" element={<Admin />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
