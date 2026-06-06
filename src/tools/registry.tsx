@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import type { Icon } from '@phosphor-icons/react';
 import RepeatSync from './repeat-sync/RepeatSync';
+import CrCl from './crcl/CrCl';
 import { CalculatorIcon, HeartPulseIcon } from '../components/icons';
 
 /**
@@ -36,9 +37,11 @@ export const tools: ToolDef[] = [
   {
     slug: 'crcl',
     name: 'Creatinine Clearance (CrCl)',
-    summary: 'Cockcroft–Gault creatinine clearance estimate. Planned — not yet available.',
-    status: 'planned',
+    summary:
+      'Estimate creatinine clearance (Cockcroft–Gault) for renal dose adjustment, with actual / ideal / adjusted body weight.',
+    status: 'available',
     icon: HeartPulseIcon,
+    component: CrCl,
   },
 ];
 

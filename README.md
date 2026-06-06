@@ -12,7 +12,7 @@ no analytics.
 | Tool | Status | Description |
 |---|---|---|
 | Repeat Medication Synchronisation | ✅ Available | Align repeat items onto a common run-out date; compute bridging + ongoing quantities. |
-| Creatinine Clearance (CrCl) | 🚧 Planned | Cockcroft–Gault estimate. |
+| Creatinine Clearance (CrCl) | ✅ Available | Cockcroft–Gault estimate with actual / ideal / adjusted body weight; µmol/L or mg/dL. |
 
 ## Tech stack
 
