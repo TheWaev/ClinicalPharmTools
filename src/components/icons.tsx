@@ -27,4 +27,5 @@ export {
   SignOut as SignOutIcon,
   CircleNotch as SpinnerIcon,
   BookOpenText as BookIcon,
+  Hourglass as PendingIcon,
 } from '@phosphor-icons/react';

@@ -54,7 +54,8 @@ export default function Signup() {
           </span>
           <p className="text-sm text-slate-600">
             We’ve sent a confirmation link to <span className="font-medium">{email}</span>. Click it
-            to verify your address, then sign in.
+            to verify your address, then sign in. New accounts also need an administrator to approve
+            access before you can use the tools.
           </p>
           <Link
             to="/login"

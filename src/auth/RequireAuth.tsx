@@ -1,15 +1,16 @@
 import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import PendingApproval from './PendingApproval';
 import { authDevBypass } from '../lib/supabase';
 import { SpinnerIcon, LockIcon } from '../components/icons';
 
 /**
- * Gates the app behind authentication. Fails closed: if Supabase env vars are
- * missing in a production build, access is blocked rather than left open.
+ * Gates the app behind authentication AND admin approval. Fails closed: if
+ * Supabase env vars are missing in a production build, access is blocked.
  */
 export default function RequireAuth({ children }: { children: ReactNode }) {
-  const { configured, loading, session } = useAuth();
+  const { configured, loading, session, approved } = useAuth();
 
   if (authDevBypass) return <>{children}</>;
 
@@ -26,7 +27,7 @@ export default function RequireAuth({ children }: { children: ReactNode }) {
     );
   }
 
-  if (loading) {
+  if (loading || (session && approved === null)) {
     return (
       <CenteredNotice>
         <SpinnerIcon className="h-7 w-7 animate-spin text-teal-600" weight="bold" />
@@ -36,6 +37,8 @@ export default function RequireAuth({ children }: { children: ReactNode }) {
   }
 
   if (!session) return <Navigate to="/login" replace />;
+
+  if (approved === false) return <PendingApproval />;
 
   return <>{children}</>;
 }

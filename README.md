@@ -89,9 +89,15 @@ self-hosting on an internal server behind your VPN.
 
 ## Authentication
 
-The whole app sits behind a login (email + password) using **Supabase Auth**. Sign-up is
-restricted to **@nhs.net** and **@abtrace.co** addresses. There is no backend to run — Supabase
-handles the user store, password hashing, email confirmation and sessions.
+The whole app sits behind a login (email + password) using **Supabase Auth**. Access is gated in
+three layers:
+1. **Domain** — only **@nhs.net** / **@abtrace.co** can register (client check + server trigger).
+2. **Email confirmation** — the user must click a link sent to their address before they can sign in.
+3. **Admin approval** — a new account stays on a "pending approval" screen until an admin approves
+   it (`profiles.approved`). See [`supabase/approvals.sql`](supabase/approvals.sql).
+
+There is no backend to run — Supabase handles the user store, password hashing, email confirmation
+and sessions.
 
 > Note: this introduces runtime calls to Supabase and shares staff emails/passwords with it (a data
 > processor). No patient data is involved and the calculators still run entirely client-side. The
@@ -102,8 +108,10 @@ handles the user store, password hashing, email confirmation and sessions.
 1. Create a Supabase project — choose an **EU/London region** (staff-email residency).
 2. **Auth → Providers → Email:** enable it with **Confirm email** on.
 3. **Auth → URL Configuration:** set the Site URL + redirect URLs to your deployed URL.
-4. **SQL editor:** run [`supabase/allowed-domains.sql`](supabase/allowed-domains.sql) to enforce the
-   allowed domains server-side.
+4. **SQL editor:** run [`supabase/allowed-domains.sql`](supabase/allowed-domains.sql) (domain
+   enforcement) and [`supabase/approvals.sql`](supabase/approvals.sql) (the approval gate).
+   Bootstrap the first admin by signing up, confirming your email, then setting your row's
+   `approved` to `true` in **Table editor → profiles**. Approve everyone else there too.
 5. **Project Settings → API:** copy the **Project URL** and **anon public key** into env vars:
 
    ```bash
