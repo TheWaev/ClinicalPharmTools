@@ -26,4 +26,5 @@ export {
   UserPlus as SignUpIcon,
   SignOut as SignOutIcon,
   CircleNotch as SpinnerIcon,
+  BookOpenText as BookIcon,
 } from '@phosphor-icons/react';

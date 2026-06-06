@@ -8,6 +8,7 @@ import {
   type WeightBasis,
 } from './crclEngine';
 import { buildCrClSummary } from './summary';
+import References, { type Reference } from '../../components/References';
 import {
   HeartPulseIcon,
   ClipboardIcon,
@@ -35,6 +36,25 @@ function toNum(value: string): number | null {
 function numStr(value: number | null): string {
   return value == null ? '' : String(value);
 }
+
+const CRCL_REFERENCES: Reference[] = [
+  {
+    label:
+      'Cockcroft DW, Gault MH. Prediction of creatinine clearance from serum creatinine. Nephron. 1976;16(1):31–41.',
+  },
+  {
+    label:
+      'Devine BJ. Gentamicin therapy. Drug Intelligence and Clinical Pharmacy. 1974;8:650–655. (ideal body weight)',
+  },
+  {
+    label:
+      'Adjusted body weight = ideal + 0.4 × (actual − ideal), as commonly applied for dosing in obesity.',
+  },
+  {
+    label: 'MDCalc — Creatinine Clearance (Cockcroft–Gault Equation).',
+    href: 'https://www.mdcalc.com/calc/43/creatinine-clearance-cockcroft-gault-equation',
+  },
+];
 
 const SEX_OPTIONS = [
   { value: 'male', label: 'Male' },
@@ -204,6 +224,16 @@ export default function CrCl() {
         </section>
 
         <ResultsPanel input={input} result={result} touched={touched} onCopy={copySummary} copied={copied} />
+
+        <References
+          note={
+            <>
+              CrCl (mL/min) = (140 − age) × weight(kg) × (0.85 if female) ÷ (72 × serum creatinine in
+              mg/dL). Serum creatinine entered in µmol/L is converted to mg/dL by dividing by 88.4.
+            </>
+          }
+          items={CRCL_REFERENCES}
+        />
       </div>
     </div>
   );

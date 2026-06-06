@@ -10,6 +10,7 @@ import {
 } from './syncEngine';
 import { buildSummaryText } from './summary';
 import { medicationNames, packSizesFor } from './dmdData';
+import References from '../../components/References';
 import {
   CalculatorIcon,
   SettingsIcon,
@@ -228,6 +229,20 @@ export default function RepeatSync() {
           rows={populatedResults}
           onCopy={copySummary}
           copied={copied}
+        />
+
+        <References
+          title="Method & assumptions"
+          note={
+            <>
+              Days of supply = current quantity ÷ daily dose. Each included item is topped up to a
+              common run-out horizon (its bridging quantity), then the ongoing quantity per cycle =
+              cycle length × daily dose. Quantities are always rounded up — to whole units, or whole
+              packs when a pack size is given. The default 28-day cycle reflects common UK
+              repeat-prescribing practice; variable-dose / PRN items are listed but excluded from the
+              calculation.
+            </>
+          }
         />
       </div>
     </div>
