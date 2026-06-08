@@ -14,6 +14,7 @@ import {
 interface ProfileRow {
   id: string;
   email: string | null;
+  pcn: string | null;
   practice: string | null;
   approved: boolean;
   is_admin: boolean;
@@ -138,7 +139,8 @@ export default function Admin() {
               <thead>
                 <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-slate-400">
                   <th scope="col" className="py-2 pr-3 font-medium">Email</th>
-                  <th scope="col" className="py-2 pr-3 font-medium">Practice / PCN</th>
+                  <th scope="col" className="py-2 pr-3 font-medium">Practice</th>
+                  <th scope="col" className="py-2 pr-3 font-medium">PCN</th>
                   <th scope="col" className="py-2 pr-3 font-medium">Status</th>
                   <th scope="col" className="py-2 pr-3 font-medium">Joined</th>
                   <th scope="col" className="py-2 font-medium">Action</th>
@@ -159,6 +161,7 @@ export default function Admin() {
                       )}
                     </td>
                     <td className="py-3 pr-3 text-slate-600">{r.practice || '—'}</td>
+                    <td className="py-3 pr-3 text-slate-500">{r.pcn || '—'}</td>
                     <td className="py-3 pr-3">
                       {r.approved ? (
                         <span className="inline-flex items-center gap-1 text-teal-700">

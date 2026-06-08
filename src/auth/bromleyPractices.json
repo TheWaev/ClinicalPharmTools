@@ -1,0 +1,94 @@
+{
+  "source": "NHS ODS (ORD API) — Bromley sub-ICB (72Q) PCNs and RE8 member practices",
+  "pcns": [
+    {
+      "name": "Beckenham PCN",
+      "code": "U36188",
+      "practices": [
+        "Cornerways Surgery",
+        "Eden Park Surgery",
+        "Elm House Surgery",
+        "Manor Road Surgery",
+        "St James' Practice"
+      ]
+    },
+    {
+      "name": "Bromley Connect PCN",
+      "code": "U43112",
+      "practices": [
+        "Dysart Surgery",
+        "London Lane Clinic",
+        "South View Partnership"
+      ]
+    },
+    {
+      "name": "Crays Collaborative PCN",
+      "code": "U50277",
+      "practices": [
+        "Broomwood Health Centre",
+        "Crescent Surgery",
+        "Derry Downs Surgery",
+        "Gillmans Road Surgery",
+        "Poverest Medical Centre",
+        "St Mary Cray Practice"
+      ]
+    },
+    {
+      "name": "Five Elms PCN",
+      "code": "U77447",
+      "practices": [
+        "Bromley Common Practice",
+        "Norheads Lane Surgery",
+        "Southborough Lane Surgery",
+        "Stock Hill Surgery",
+        "Summercroft Surgery"
+      ]
+    },
+    {
+      "name": "Hayes Wick PCN",
+      "code": "U98580",
+      "practices": [
+        "Addington Road Surgery",
+        "Forge Close Surgery",
+        "Pickhurst Surgery",
+        "Station Road Surgery",
+        "Wickham Park Surgery"
+      ]
+    },
+    {
+      "name": "Mottingham, Downham & Chislehurst PCN",
+      "code": "U03551",
+      "practices": [
+        "Links Medical Practice",
+        "The Chislehurst Partnership"
+      ]
+    },
+    {
+      "name": "Orpington PCN",
+      "code": "U87524",
+      "practices": [
+        "Ballater Surgery",
+        "Bank House Surgery",
+        "Bromleag Care Practice",
+        "Chelsfield Surgery",
+        "Family Surgery",
+        "Green Street Green Med Ct",
+        "Knoll Medical Practice",
+        "Tudor Way Surgery",
+        "Whitehouse Surgery"
+      ]
+    },
+    {
+      "name": "Penge PCN",
+      "code": "U76778",
+      "practices": [
+        "Anerley Surgery",
+        "Highland Road Surgery",
+        "Oakfield Surgery",
+        "Robin Hood Surgery",
+        "Sundridge Medical Centre",
+        "The Park Practice"
+      ]
+    }
+  ]
+}

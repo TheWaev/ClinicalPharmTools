@@ -4,6 +4,7 @@ import { useAuth } from '../auth/AuthContext';
 import AuthLayout, { authInputCls } from '../auth/AuthLayout';
 import { authDevBypass } from '../lib/supabase';
 import { isAllowedEmailDomain, ALLOWED_DOMAINS_LABEL } from '../auth/allowedDomains';
+import { pcns, OTHER_PRACTICE } from '../auth/practices';
 import {
   EmailIcon,
   LockIcon,
@@ -15,12 +16,14 @@ import {
 } from '../components/icons';
 
 const MIN_PASSWORD = 8;
+const SEP = '|||'; // encodes "<pcn>|||<practice>" in one option value
 
 export default function Signup() {
   const { session, signUp } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [practice, setPractice] = useState('');
+  const [selected, setSelected] = useState(''); // chosen option value
+  const [otherPractice, setOtherPractice] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -39,13 +42,25 @@ export default function Signup() {
       setError(`Password must be at least ${MIN_PASSWORD} characters.`);
       return;
     }
-    if (practice.trim() === '') {
-      setError('Enter your practice or PCN.');
+    if (!selected) {
+      setError('Select your GP practice.');
       return;
     }
 
+    let pcn = '';
+    let practice = '';
+    if (selected === OTHER_PRACTICE) {
+      practice = otherPractice.trim();
+      if (practice === '') {
+        setError('Enter your practice name.');
+        return;
+      }
+    } else {
+      [pcn, practice] = selected.split(SEP);
+    }
+
     setBusy(true);
-    const { error, needsEmailConfirmation } = await signUp(email, password, practice.trim());
+    const { error, needsEmailConfirmation } = await signUp(email, password, pcn, practice);
     setBusy(false);
     if (error) setError(error);
     else if (needsEmailConfirmation) setDone(true);
@@ -118,20 +133,41 @@ export default function Signup() {
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Practice / PCN</span>
+          <span className="text-sm font-medium text-slate-700">GP practice</span>
           <div className="relative mt-1">
             <PracticeIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              autoComplete="organization"
+            <select
               required
-              value={practice}
-              onChange={(e) => setPractice(e.target.value)}
-              placeholder="e.g. your practice name or Bromley PCN"
+              value={selected}
+              onChange={(e) => setSelected(e.target.value)}
               className={authInputCls}
-            />
+            >
+              <option value="" disabled>
+                Select your practice…
+              </option>
+              {pcns.map((p) => (
+                <optgroup key={p.code} label={p.name}>
+                  {p.practices.map((practice) => (
+                    <option key={`${p.code}-${practice}`} value={`${p.name}${SEP}${practice}`}>
+                      {practice}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+              <option value={OTHER_PRACTICE}>Other / not listed</option>
+            </select>
           </div>
         </label>
+
+        {selected === OTHER_PRACTICE && (
+          <input
+            type="text"
+            value={otherPractice}
+            onChange={(e) => setOtherPractice(e.target.value)}
+            placeholder="Type your practice name"
+            className={authInputCls.replace('pl-9', 'pl-3')}
+          />
+        )}
 
         <p className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
           Only {ALLOWED_DOMAINS_LABEL} email addresses can register. New accounts are reviewed

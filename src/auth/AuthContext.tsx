@@ -26,7 +26,12 @@ interface AuthContextValue {
   /** Whether the signed-in user is an administrator. */
   isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<AuthResult>;
-  signUp: (email: string, password: string, practice: string) => Promise<AuthResult>;
+  signUp: (
+    email: string,
+    password: string,
+    pcn: string,
+    practice: string,
+  ) => Promise<AuthResult>;
   signOut: () => Promise<void>;
   /** Re-check approval status (e.g. from the "pending approval" screen). */
   refreshApproval: () => Promise<void>;
@@ -108,14 +113,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: error?.message ?? null };
       },
 
-      async signUp(email, password, practice) {
+      async signUp(email, password, pcn, practice) {
         if (!supabase) return { error: 'Authentication is not configured.' };
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}${import.meta.env.BASE_URL}`,
-            data: { practice },
+            data: { pcn, practice },
           },
         });
         if (error) return { error: error.message };

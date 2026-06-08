@@ -1,11 +1,12 @@
 -- Admin role + practice/PCN, enabling the in-app Admin → Users page.
 -- Run once in the Supabase SQL editor, AFTER allowed-domains.sql and approvals.sql.
 
--- 1. New columns: which practice/PCN the user belongs to, and an admin flag.
+-- 1. New columns: which PCN + practice the user belongs to, and an admin flag.
+alter table public.profiles add column if not exists pcn text;
 alter table public.profiles add column if not exists practice text;
 alter table public.profiles add column if not exists is_admin boolean not null default false;
 
--- 2. Capture the practice (from sign-up metadata) when the profile is created.
+-- 2. Capture the PCN + practice (from sign-up metadata) when the profile is created.
 create or replace function public.handle_new_user()
 returns trigger
 language plpgsql
@@ -13,8 +14,13 @@ security definer
 set search_path = ''
 as $$
 begin
-  insert into public.profiles (id, email, practice)
-  values (new.id, new.email, nullif(new.raw_user_meta_data ->> 'practice', ''))
+  insert into public.profiles (id, email, pcn, practice)
+  values (
+    new.id,
+    new.email,
+    nullif(new.raw_user_meta_data ->> 'pcn', ''),
+    nullif(new.raw_user_meta_data ->> 'practice', '')
+  )
   on conflict (id) do nothing;
   return new;
 end;

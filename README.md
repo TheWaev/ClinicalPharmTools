@@ -95,8 +95,11 @@ three layers:
 1. **Domain** — only **@nhs.net** / **@abtrace.co** can register (client check + server trigger).
 2. **Email confirmation** — the user must click a link sent to their address before they can sign in.
 3. **Admin approval** — a new account stays on a "pending approval" screen until an admin approves
-   it. Admins approve from an in-app **Admin → Users** page (or the Supabase table). Sign-up also
-   captures the user's **practice / PCN**, shown in the approval list. See
+   it. Admins approve from an in-app **Admin → Users** page (or the Supabase table). Sign-up
+   captures the user's **practice + PCN** from a single dropdown grouped by PCN, sourced from
+   **NHS ODS** (Bromley sub-ICB) and refreshable with `npm run build:practices`
+   ([scripts/build-bromley-practices.mjs](scripts/build-bromley-practices.mjs) →
+   [src/auth/bromleyPractices.json](src/auth/bromleyPractices.json)). See
    [`supabase/approvals.sql`](supabase/approvals.sql) and [`supabase/admin.sql`](supabase/admin.sql).
 
 There is no backend to run — Supabase handles the user store, password hashing, email confirmation

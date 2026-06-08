@@ -9,11 +9,13 @@
 create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   email text,
+  pcn text,
   practice text,
   approved boolean not null default false,
   is_admin boolean not null default false,
   created_at timestamptz not null default now()
 );
+alter table public.profiles add column if not exists pcn text;
 alter table public.profiles add column if not exists practice text;
 alter table public.profiles add column if not exists is_admin boolean not null default false;
 alter table public.profiles enable row level security;
@@ -39,8 +41,12 @@ create trigger enforce_allowed_email_domains
 create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = '' as $$
 begin
-  insert into public.profiles (id, email, practice)
-  values (new.id, new.email, nullif(new.raw_user_meta_data ->> 'practice', ''))
+  insert into public.profiles (id, email, pcn, practice)
+  values (
+    new.id, new.email,
+    nullif(new.raw_user_meta_data ->> 'pcn', ''),
+    nullif(new.raw_user_meta_data ->> 'practice', '')
+  )
   on conflict (id) do nothing;
   return new;
 end; $$;
