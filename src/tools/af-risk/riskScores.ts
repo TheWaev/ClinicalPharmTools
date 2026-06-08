@@ -71,42 +71,40 @@ export function chadsVasc(i: ChadsVascInput): ChadsVascResult {
   return { score, items, recommendation };
 }
 
-// ---------- HAS-BLED ----------
+// ---------- ORBIT (bleeding risk; preferred by NICE NG196) ----------
 
-export interface HasBledInput {
-  age: number | null; // elderly = age > 65
-  hypertensionUncontrolled: boolean; // systolic BP > 160 mmHg
-  abnormalRenal: boolean;
-  abnormalLiver: boolean;
-  stroke: boolean;
-  bleeding: boolean; // prior major bleeding or predisposition
-  labileINR: boolean; // on warfarin, time in therapeutic range < 60%
-  drugs: boolean; // concurrent antiplatelet / NSAID
-  alcohol: boolean; // ≥ 8 units/week
+export interface OrbitInput {
+  age: number | null; // older = age ≥ 75
+  anaemia: boolean; // reduced haemoglobin/haematocrit or history of anaemia (2)
+  bleeding: boolean; // prior GI/intracranial bleed or haemorrhagic stroke (2)
+  eGFRLow: boolean; // insufficient kidney function, eGFR < 60 (1)
+  antiplatelet: boolean; // treatment with an antiplatelet (1)
 }
 
-export interface HasBledResult {
+export type OrbitRisk = 'low' | 'medium' | 'high';
+
+export interface OrbitResult {
   score: number;
   items: ScoreItem[];
+  risk: OrbitRisk;
   recommendation: string;
 }
 
-export function hasBled(i: HasBledInput): HasBledResult {
+export function orbit(i: OrbitInput): OrbitResult {
   const items: ScoreItem[] = [
-    { label: 'Uncontrolled hypertension (SBP > 160)', points: i.hypertensionUncontrolled ? 1 : 0 },
-    { label: 'Abnormal renal function', points: i.abnormalRenal ? 1 : 0 },
-    { label: 'Abnormal liver function', points: i.abnormalLiver ? 1 : 0 },
-    { label: 'Stroke history', points: i.stroke ? 1 : 0 },
-    { label: 'Bleeding history or predisposition', points: i.bleeding ? 1 : 0 },
-    { label: 'Labile INR (TTR < 60%)', points: i.labileINR ? 1 : 0 },
-    { label: 'Elderly (age > 65)', points: i.age != null && i.age > 65 ? 1 : 0 },
-    { label: 'Drugs (antiplatelet / NSAID)', points: i.drugs ? 1 : 0 },
-    { label: 'Alcohol (≥ 8 units/week)', points: i.alcohol ? 1 : 0 },
+    { label: 'Older (age ≥ 75)', points: i.age != null && i.age >= 75 ? 1 : 0 },
+    { label: 'Reduced haemoglobin / anaemia', points: i.anaemia ? 2 : 0 },
+    { label: 'Bleeding history', points: i.bleeding ? 2 : 0 },
+    { label: 'Insufficient kidney function (eGFR < 60)', points: i.eGFRLow ? 1 : 0 },
+    { label: 'Treatment with antiplatelet', points: i.antiplatelet ? 1 : 0 },
   ];
   const score = items.reduce((s, it) => s + it.points, 0);
+  const risk: OrbitRisk = score <= 2 ? 'low' : score === 3 ? 'medium' : 'high';
   const recommendation =
-    score >= 3
-      ? 'High bleeding risk — address modifiable factors (BP, alcohol, NSAIDs/antiplatelets) and review regularly. A high score is NOT a contraindication to anticoagulation.'
-      : 'Lower bleeding risk. Continue to address modifiable risk factors.';
-  return { score, items, recommendation };
+    risk === 'high'
+      ? 'High bleeding risk (~8.1 major bleeds per 100 patient-years). Address modifiable factors and review regularly — NOT a contraindication to anticoagulation.'
+      : risk === 'medium'
+        ? 'Medium bleeding risk (~4.7 major bleeds per 100 patient-years). Address modifiable factors.'
+        : 'Low bleeding risk (~2.4 major bleeds per 100 patient-years).';
+  return { score, items, risk, recommendation };
 }

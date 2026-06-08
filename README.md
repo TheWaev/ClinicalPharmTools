@@ -14,7 +14,7 @@ no analytics.
 | Repeat Medication Synchronisation | ✅ Available | Align repeat items onto a common run-out date; compute bridging + ongoing quantities. |
 | Creatinine Clearance (CrCl) | ✅ Available | Cockcroft–Gault estimate with actual / ideal / adjusted body weight; µmol/L or mg/dL. |
 | Weight Management Eligibility | ✅ Available | Tirzepatide (Mounjaro) eligibility against the South East London pathway; date-phased, borough-aware. |
-| Atrial Fibrillation Risk | ✅ Available | CHA₂DS₂-VASc (stroke) + HAS-BLED (bleeding) scores with NICE NG196 thresholds. |
+| Atrial Fibrillation Risk | ✅ Available | CHA₂DS₂-VASc (stroke) + ORBIT (bleeding) scores per NICE NG196. |
 | Anticholinergic Burden (ACB) | ✅ Available | Total a patient's anticholinergic cognitive burden from the ACB scale; flags ≥3. |
 | Opioid Dose Converter | ✅ Available | Approximate oral morphine equivalent (OME) + switching guide with safety caveats. |
 

@@ -2,9 +2,9 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import {
   chadsVasc,
-  hasBled,
+  orbit,
   type ChadsVascInput,
-  type HasBledInput,
+  type OrbitInput,
   type ScoreItem,
   type Sex,
 } from './riskScores';
@@ -31,7 +31,7 @@ const checkboxCls = 'mt-0.5 h-4 w-4 shrink-0 rounded border-slate-300 accent-tea
 const REFERENCES: Reference[] = [
   { label: 'NICE NG196 — Atrial fibrillation: diagnosis and management.', href: 'https://www.nice.org.uk/guidance/ng196' },
   { label: 'Lip GYH, Nieuwlaat R, Pisters R, et al. Refining clinical risk stratification (CHA₂DS₂-VASc). Chest. 2010;137(2):263–272.' },
-  { label: 'Pisters R, Lane DA, Nieuwlaat R, et al. A novel user-friendly score (HAS-BLED). Chest. 2010;138(5):1093–1100.' },
+  { label: 'O’Brien EC, Simon DN, Thomas LE, et al. The ORBIT bleeding score. Eur Heart J. 2015;36(46):3258–3264.' },
 ];
 
 const toNum = (v: string) => (v.trim() === '' ? null : Number.isFinite(Number(v)) ? Number(v) : null);
@@ -48,25 +48,21 @@ export default function AfRisk() {
     strokeTia: false,
     vascular: false,
   });
-  const [hbFlags, setHbFlags] = useState({
-    hypertensionUncontrolled: false,
-    abnormalRenal: false,
-    abnormalLiver: false,
-    stroke: false,
+  const [obFlags, setObFlags] = useState({
+    anaemia: false,
     bleeding: false,
-    labileINR: false,
-    drugs: false,
-    alcohol: false,
+    eGFRLow: false,
+    antiplatelet: false,
   });
 
   const cvInput: ChadsVascInput = { age, sex, ...cvFlags };
-  const hbInput: HasBledInput = { age, ...hbFlags };
+  const obInput: OrbitInput = { age, ...obFlags };
   const cv = useMemo(() => chadsVasc(cvInput), [cvInput]);
-  const hb = useMemo(() => hasBled(hbInput), [hbInput]);
+  const ob = useMemo(() => orbit(obInput), [obInput]);
 
   async function copySummary() {
     try {
-      await navigator.clipboard.writeText(buildAfSummary(cv, hb));
+      await navigator.clipboard.writeText(buildAfSummary(cv, ob));
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -90,8 +86,8 @@ export default function AfRisk() {
               Atrial Fibrillation Risk
             </h1>
             <p className="mt-1 max-w-2xl text-sm text-slate-600">
-              CHA₂DS₂-VASc (stroke risk) and HAS-BLED (bleeding risk) to support anticoagulation
-              decisions. A decision aid, not a substitute for clinical judgement.
+              CHA₂DS₂-VASc (stroke risk) and ORBIT (bleeding risk) to support anticoagulation
+              decisions, per NICE NG196. A decision aid, not a substitute for clinical judgement.
             </p>
           </div>
         </div>
@@ -119,6 +115,7 @@ export default function AfRisk() {
           score={cv.score}
           recommendation={cv.recommendation}
           items={cv.items}
+          elevated={cv.score >= 2}
         >
           <CheckboxGrid
             options={[
@@ -135,28 +132,26 @@ export default function AfRisk() {
         </ScoreCard>
 
         <ScoreCard
-          title="HAS-BLED — bleeding risk"
-          score={hb.score}
-          recommendation={hb.recommendation}
-          items={hb.items}
+          title="ORBIT — bleeding risk"
+          score={ob.score}
+          recommendation={ob.recommendation}
+          items={ob.items}
+          elevated={ob.risk !== 'low'}
         >
           <CheckboxGrid
             options={[
-              ['hypertensionUncontrolled', 'Uncontrolled hypertension (SBP > 160)'],
-              ['abnormalRenal', 'Abnormal renal function'],
-              ['abnormalLiver', 'Abnormal liver function'],
-              ['stroke', 'Stroke history'],
-              ['bleeding', 'Bleeding history or predisposition'],
-              ['labileINR', 'Labile INR (TTR < 60%, on warfarin)'],
-              ['drugs', 'Drugs — antiplatelet / NSAID'],
-              ['alcohol', 'Alcohol ≥ 8 units/week'],
+              ['anaemia', 'Reduced haemoglobin / anaemia (2)'],
+              ['bleeding', 'Bleeding history — GI, intracranial or haemorrhagic stroke (2)'],
+              ['eGFRLow', 'Insufficient kidney function (eGFR < 60)'],
+              ['antiplatelet', 'Treatment with an antiplatelet'],
             ]}
-            flags={hbFlags}
-            onToggle={(k) => setHbFlags((p) => ({ ...p, [k]: !p[k as keyof typeof p] }))}
+            flags={obFlags}
+            onToggle={(k) => setObFlags((p) => ({ ...p, [k]: !p[k as keyof typeof p] }))}
           />
           <p className="mt-2 inline-flex items-start gap-1.5 rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-500">
             <InfoIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" weight="fill" />
-            NICE NG196 now prefers the ORBIT score for bleeding risk; HAS-BLED remains widely used.
+            "Older (age ≥ 75)" is scored from the age field above. NICE NG196 recommends ORBIT for
+            bleeding-risk assessment.
           </p>
         </ScoreCard>
 
@@ -184,15 +179,17 @@ function ScoreCard({
   score,
   recommendation,
   items,
+  elevated,
   children,
 }: {
   title: string;
   score: number;
   recommendation: string;
   items: ScoreItem[];
+  elevated: boolean;
   children: ReactNode;
 }) {
-  const high = /high bleeding|offer/i.test(recommendation);
+  const high = elevated;
   return (
     <section className={card}>
       <div className="mb-3 flex items-center justify-between gap-3">

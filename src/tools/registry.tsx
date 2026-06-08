@@ -67,7 +67,7 @@ export const tools: ToolDef[] = [
     slug: 'af-risk',
     name: 'Atrial Fibrillation Risk',
     summary:
-      'CHA₂DS₂-VASc stroke risk and HAS-BLED bleeding risk to support anticoagulation decisions.',
+      'CHA₂DS₂-VASc stroke risk and ORBIT bleeding risk (NICE NG196) to support anticoagulation decisions.',
     status: 'available',
     icon: PulseIcon,
     component: AfRisk,

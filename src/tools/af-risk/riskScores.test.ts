@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { chadsVasc, hasBled, type ChadsVascInput, type HasBledInput } from './riskScores';
+import { chadsVasc, orbit, type ChadsVascInput, type OrbitInput } from './riskScores';
 
 function cv(p: Partial<ChadsVascInput>): ChadsVascInput {
   return {
@@ -14,17 +14,13 @@ function cv(p: Partial<ChadsVascInput>): ChadsVascInput {
   };
 }
 
-function hb(p: Partial<HasBledInput>): HasBledInput {
+function ob(p: Partial<OrbitInput>): OrbitInput {
   return {
     age: 50,
-    hypertensionUncontrolled: false,
-    abnormalRenal: false,
-    abnormalLiver: false,
-    stroke: false,
+    anaemia: false,
     bleeding: false,
-    labileINR: false,
-    drugs: false,
-    alcohol: false,
+    eGFRLow: false,
+    antiplatelet: false,
     ...p,
   };
 }
@@ -58,31 +54,32 @@ describe('CHA₂DS₂-VASc', () => {
   });
 });
 
-describe('HAS-BLED', () => {
-  it('elderly point applies above 65', () => {
-    expect(hasBled(hb({ age: 65 })).score).toBe(0);
-    expect(hasBled(hb({ age: 66 })).score).toBe(1);
+describe('ORBIT', () => {
+  it('older point applies at age ≥75', () => {
+    expect(orbit(ob({ age: 74 })).score).toBe(0);
+    expect(orbit(ob({ age: 75 })).score).toBe(1);
   });
 
-  it('sums all components', () => {
-    const r = hasBled(
-      hb({
-        age: 70,
-        hypertensionUncontrolled: true,
-        abnormalRenal: true,
-        stroke: true,
-        bleeding: true,
-        drugs: true,
-      }),
-    );
-    // elderly(1)+HTN(1)+renal(1)+stroke(1)+bleeding(1)+drugs(1) = 6
-    expect(r.score).toBe(6);
+  it('weights anaemia and bleeding history as 2 points each', () => {
+    expect(orbit(ob({ anaemia: true })).score).toBe(2);
+    expect(orbit(ob({ bleeding: true })).score).toBe(2);
+    expect(orbit(ob({ eGFRLow: true })).score).toBe(1);
+    expect(orbit(ob({ antiplatelet: true })).score).toBe(1);
+    // max = 1 + 2 + 2 + 1 + 1
+    expect(
+      orbit(ob({ age: 80, anaemia: true, bleeding: true, eGFRLow: true, antiplatelet: true })).score,
+    ).toBe(7);
   });
 
-  it('flags high bleeding risk at ≥3 (not a contraindication)', () => {
-    expect(hasBled(hb({ age: 70, bleeding: true })).recommendation).toMatch(/lower bleeding risk/i);
-    const high = hasBled(hb({ age: 70, bleeding: true, drugs: true })); // 3
-    expect(high.recommendation).toMatch(/high bleeding risk/i);
-    expect(high.recommendation).toMatch(/not a contraindication/i);
+  it('bands: 0–2 low, 3 medium, ≥4 high', () => {
+    expect(orbit(ob({ anaemia: true })).risk).toBe('low'); // 2
+    expect(orbit(ob({ anaemia: true, eGFRLow: true })).risk).toBe('medium'); // 3
+    expect(orbit(ob({ anaemia: true, bleeding: true })).risk).toBe('high'); // 4
+  });
+
+  it('high risk is flagged but not a contraindication', () => {
+    const r = orbit(ob({ anaemia: true, bleeding: true }));
+    expect(r.recommendation).toMatch(/high bleeding risk/i);
+    expect(r.recommendation).toMatch(/not a contraindication/i);
   });
 });
