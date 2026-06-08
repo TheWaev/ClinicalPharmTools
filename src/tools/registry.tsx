@@ -5,7 +5,15 @@ import CrCl from './crcl/CrCl';
 import WeightMgmt from './weight-management/WeightMgmt';
 import AfRisk from './af-risk/AfRisk';
 import AcbCalc from './acb/AcbCalc';
-import { CalculatorIcon, HeartPulseIcon, ScalesIcon, PulseIcon, BrainIcon } from '../components/icons';
+import OpioidConvert from './opioid/OpioidConvert';
+import {
+  CalculatorIcon,
+  HeartPulseIcon,
+  ScalesIcon,
+  PulseIcon,
+  BrainIcon,
+  ConvertIcon,
+} from '../components/icons';
 
 /**
  * The single source of truth for the suite's tools.
@@ -72,6 +80,15 @@ export const tools: ToolDef[] = [
     status: 'available',
     icon: BrainIcon,
     component: AcbCalc,
+  },
+  {
+    slug: 'opioid-converter',
+    name: 'Opioid Dose Converter',
+    summary:
+      'Approximate oral morphine equivalent (OME) and opioid switching guide, with cross-tolerance and safety caveats.',
+    status: 'available',
+    icon: ConvertIcon,
+    component: OpioidConvert,
   },
 ];
 

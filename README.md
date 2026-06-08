@@ -16,6 +16,7 @@ no analytics.
 | Weight Management Eligibility | ✅ Available | Tirzepatide (Mounjaro) eligibility against the South East London pathway; date-phased, borough-aware. |
 | Atrial Fibrillation Risk | ✅ Available | CHA₂DS₂-VASc (stroke) + HAS-BLED (bleeding) scores with NICE NG196 thresholds. |
 | Anticholinergic Burden (ACB) | ✅ Available | Total a patient's anticholinergic cognitive burden from the ACB scale; flags ≥3. |
+| Opioid Dose Converter | ✅ Available | Approximate oral morphine equivalent (OME) + switching guide with safety caveats. |
 
 ## Tech stack
 
