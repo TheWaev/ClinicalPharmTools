@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "build:dmd": "node scripts/build-dmd.mjs",
-    "build:practices": "node scripts/build-bromley-practices.mjs"
+    "build:practices": "node scripts/build-bromley-practices.mjs",
+    "build:townsend": "node scripts/build-townsend.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",

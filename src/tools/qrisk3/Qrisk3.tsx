@@ -8,6 +8,7 @@ import {
   type QSex,
 } from './qrisk3';
 import { buildQrisk3Summary } from './summary';
+import { lookupTownsend } from './postcodeTownsend';
 import References, { type Reference } from '../../components/References';
 import {
   HeartIcon,
@@ -99,7 +100,7 @@ export default function Qrisk3() {
   const [hdl, setHdl] = useState<number | null>(null);
   const [sbp, setSbp] = useState<number | null>(null);
   const [sbpSd, setSbpSd] = useState<number | null>(null);
-  const [townsend, setTownsend] = useState<number | null>(null);
+  const [postcode, setPostcode] = useState('');
   const [flags, setFlags] = useState<Record<BoolKey, boolean>>({
     af: false, treatedHypertension: false, type1Diabetes: false, type2Diabetes: false,
     ckd: false, rheumatoidArthritis: false, sle: false, migraine: false,
@@ -109,10 +110,14 @@ export default function Qrisk3() {
   const [copied, setCopied] = useState(false);
 
   const cholRatio = totalChol && hdl && hdl > 0 ? totalChol / hdl : null;
+  const townsendLookup = useMemo(
+    () => (postcode.trim() ? lookupTownsend(postcode) : { townsend: null, sector: null, matched: false }),
+    [postcode],
+  );
 
   const input: Qrisk3Input = {
     sex, age, ethnicity, smoking, heightCm, weightKg,
-    cholRatio, sbp, sbpSd, townsend, ...flags,
+    cholRatio, sbp, sbpSd, townsend: townsendLookup.townsend, ...flags,
     erectileDysfunction: sex === 'male' && flags.erectileDysfunction,
   };
   const result = useMemo(() => qrisk3(input), [input]);
@@ -197,7 +202,24 @@ export default function Qrisk3() {
               <Num id="q-hdl" label="HDL cholesterol (mmol/L)" value={hdl} onChange={setHdl} />
               <Num id="q-sbp" label="Systolic BP (mmHg)" value={sbp} onChange={setSbp} />
               <Num id="q-sbpsd" label="SD of systolic BP" value={sbpSd} onChange={setSbpSd} optional />
-              <Num id="q-town" label="Townsend deprivation score" value={townsend} onChange={setTownsend} optional />
+              <div className="sm:col-span-2">
+                <label htmlFor="q-postcode" className={fieldLabel}>
+                  Postcode <span className="font-normal text-slate-400">· optional, for deprivation</span>
+                </label>
+                <input id="q-postcode" type="text" autoComplete="off" spellCheck={false}
+                  placeholder="e.g. BR1 2AB" value={postcode}
+                  onChange={(e) => setPostcode(e.target.value)} className={`${inputCls} sm:max-w-xs`} />
+                <p className="mt-1 text-xs text-slate-400">
+                  Used only to look up a deprivation score on your device — not stored or sent anywhere.
+                  {postcode.trim() && (
+                    townsendLookup.matched ? (
+                      <span className="font-medium text-teal-700"> Townsend {townsendLookup.townsend} (sector {townsendLookup.sector}).</span>
+                    ) : (
+                      <span className="font-medium text-amber-700"> Postcode not recognised — using the population average.</span>
+                    )
+                  )}
+                </p>
+              </div>
             </div>
             {(result.bmiUsed != null && heightCm && weightKg) || cholRatio != null ? (
               <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
@@ -327,7 +349,7 @@ export default function Qrisk3() {
 
       <div className="mt-5">
         <References
-          note="QRISK3 estimates risk in people aged 25–84 without existing CVD. It is not for people with type 1 diabetes under 25, established CVD, or familial hypercholesterolaemia. Deprivation is entered as an optional Townsend score (default 0 ≈ average) — postcode is never used."
+          note="QRISK3 estimates risk in people aged 25–84 without existing CVD. It is not for people with type 1 diabetes under 25, established CVD, or familial hypercholesterolaemia. An optional postcode is matched on your device to a sector-level Townsend deprivation score (England & Wales, 2011 census, Open Government Licence) — the postcode is never stored or transmitted, and if it is omitted or unrecognised the population average is used."
           items={REFERENCES}
         />
       </div>
