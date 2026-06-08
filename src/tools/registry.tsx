@@ -8,7 +8,7 @@ import AcbCalc from './acb/AcbCalc';
 import OpioidConvert from './opioid/OpioidConvert';
 import DoacChecker from './doac/DoacChecker';
 import CkdClassifier from './ckd/CkdClassifier';
-import LipidOptimiser from './lipid/LipidOptimiser';
+import Qrisk3 from './qrisk3/Qrisk3';
 import SteroidEquiv from './steroid/SteroidEquiv';
 import {
   CalculatorIcon,
@@ -127,14 +127,14 @@ export const tools: ToolDef[] = [
     component: CkdClassifier,
   },
   {
-    slug: 'lipid',
-    name: 'Lipid / Statin Optimiser',
+    slug: 'qrisk3',
+    name: 'QRISK3 — CVD Risk',
     summary:
-      'Statin indication, intensity and lipid targets for primary and secondary prevention (NICE NG238).',
+      'Estimate 10-year cardiovascular risk (QRISK®3-2017) for primary prevention — runs locally, no postcode.',
     status: 'available',
     beta: true,
     icon: HeartIcon,
-    component: LipidOptimiser,
+    component: Qrisk3,
   },
   {
     slug: 'steroid-equivalence',

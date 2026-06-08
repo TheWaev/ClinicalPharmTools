@@ -19,7 +19,7 @@ no analytics.
 | Opioid Dose Converter | ✅ Available | Approximate oral morphine equivalent (OME) + switching guide with safety caveats. |
 | DOAC Dose Checker | ✅ Available | Licensed dose + reduction criteria for apixaban/rivaroxaban/edoxaban/dabigatran in non-valvular AF; inline Cockcroft–Gault CrCl calculator. |
 | CKD Classification (KDIGO) | ✅ Available | eGFR + ACR on the KDIGO heat-map; NICE NG203 nephrology referral checks. |
-| Lipid / Statin Optimiser | ✅ Available | Statin indication, intensity bands + lipid targets for primary/secondary prevention (NICE NG238). |
+| QRISK3 — CVD Risk | ✅ Available | 10-year cardiovascular risk (QRISK®3-2017, ClinRisk LGPL) for primary prevention; runs locally, no postcode. Validated against the 48 original-C-algorithm reference cases. |
 | Corticosteroid Equivalence | ✅ Available | Convert between glucocorticoids by anti-inflammatory dose (BNF); adrenal-suppression prompts. |
 
 > All tools are currently flagged **Beta** pending clinical validation.
