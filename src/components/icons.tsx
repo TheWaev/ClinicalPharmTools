@@ -31,4 +31,5 @@ export {
   Buildings as PracticeIcon,
   UsersThree as UsersIcon,
   XCircle as RevokeIcon,
+  Scales as ScalesIcon,
 } from '@phosphor-icons/react';

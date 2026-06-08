@@ -2,7 +2,8 @@ import type { ComponentType } from 'react';
 import type { Icon } from '@phosphor-icons/react';
 import RepeatSync from './repeat-sync/RepeatSync';
 import CrCl from './crcl/CrCl';
-import { CalculatorIcon, HeartPulseIcon } from '../components/icons';
+import WeightMgmt from './weight-management/WeightMgmt';
+import { CalculatorIcon, HeartPulseIcon, ScalesIcon } from '../components/icons';
 
 /**
  * The single source of truth for the suite's tools.
@@ -42,6 +43,15 @@ export const tools: ToolDef[] = [
     status: 'available',
     icon: HeartPulseIcon,
     component: CrCl,
+  },
+  {
+    slug: 'weight-management',
+    name: 'Weight Management Eligibility',
+    summary:
+      'Check eligibility for NHS tirzepatide (Mounjaro) weight management against the South East London pathway.',
+    status: 'available',
+    icon: ScalesIcon,
+    component: WeightMgmt,
   },
 ];
 
