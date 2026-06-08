@@ -6,6 +6,10 @@ import WeightMgmt from './weight-management/WeightMgmt';
 import AfRisk from './af-risk/AfRisk';
 import AcbCalc from './acb/AcbCalc';
 import OpioidConvert from './opioid/OpioidConvert';
+import DoacChecker from './doac/DoacChecker';
+import CkdClassifier from './ckd/CkdClassifier';
+import LipidOptimiser from './lipid/LipidOptimiser';
+import SteroidEquiv from './steroid/SteroidEquiv';
 import {
   CalculatorIcon,
   HeartPulseIcon,
@@ -13,6 +17,10 @@ import {
   PulseIcon,
   BrainIcon,
   ConvertIcon,
+  DropIcon,
+  FunnelIcon,
+  HeartIcon,
+  PillIcon,
 } from '../components/icons';
 
 /**
@@ -97,6 +105,46 @@ export const tools: ToolDef[] = [
     beta: true,
     icon: ConvertIcon,
     component: OpioidConvert,
+  },
+  {
+    slug: 'doac-dosing',
+    name: 'DOAC Dose Checker',
+    summary:
+      'Licensed dose and reduction criteria for apixaban, rivaroxaban, edoxaban and dabigatran in non-valvular AF.',
+    status: 'available',
+    beta: true,
+    icon: DropIcon,
+    component: DoacChecker,
+  },
+  {
+    slug: 'ckd',
+    name: 'CKD Classification (KDIGO)',
+    summary:
+      'Classify CKD by eGFR and ACR on the KDIGO heat-map and check NICE NG203 nephrology referral criteria.',
+    status: 'available',
+    beta: true,
+    icon: FunnelIcon,
+    component: CkdClassifier,
+  },
+  {
+    slug: 'lipid',
+    name: 'Lipid / Statin Optimiser',
+    summary:
+      'Statin indication, intensity and lipid targets for primary and secondary prevention (NICE NG238).',
+    status: 'available',
+    beta: true,
+    icon: HeartIcon,
+    component: LipidOptimiser,
+  },
+  {
+    slug: 'steroid-equivalence',
+    name: 'Corticosteroid Equivalence',
+    summary:
+      'Convert between glucocorticoids by equivalent anti-inflammatory dose, with adrenal-suppression prompts.',
+    status: 'available',
+    beta: true,
+    icon: PillIcon,
+    component: SteroidEquiv,
   },
 ];
 

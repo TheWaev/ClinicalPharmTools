@@ -15,7 +15,7 @@ export default function Home() {
         <div className="relative max-w-2xl">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-medium ring-1 ring-inset ring-white/20">
             <ShieldIcon className="h-3.5 w-3.5" weight="fill" />
-            Client-side · no patient data leaves your browser
+            Runs in your browser — no information you enter is recorded
           </span>
           <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
             Clinical pharmacy tools

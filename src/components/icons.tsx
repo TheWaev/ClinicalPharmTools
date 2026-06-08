@@ -37,4 +37,7 @@ export {
   MagnifyingGlass as SearchIcon,
   X as XIcon,
   ArrowsLeftRight as ConvertIcon,
+  Drop as DropIcon,
+  Funnel as FunnelIcon,
+  Heart as HeartIcon,
 } from '@phosphor-icons/react';
