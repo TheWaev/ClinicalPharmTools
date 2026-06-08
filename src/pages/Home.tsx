@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { tools } from '../tools/registry';
 import { ArrowRightIcon, ShieldIcon, SparklesIcon } from '../components/icons';
+import { BetaBadge } from '../components/BetaBadge';
 
 export default function Home() {
   return (
@@ -56,10 +57,12 @@ export default function Home() {
                 >
                   <Icon className="h-6 w-6" weight="duotone" />
                 </span>
-                {!isAvailable && (
+                {!isAvailable ? (
                   <span className="rounded-full bg-slate-200 px-2.5 py-0.5 text-xs font-medium text-slate-600">
                     Planned
                   </span>
+                ) : (
+                  tool.beta && <BetaBadge />
                 )}
               </div>
               <h3 className="font-semibold text-slate-900">{tool.name}</h3>

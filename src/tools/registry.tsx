@@ -29,6 +29,8 @@ export interface ToolDef {
   /** One-line description shown on the home page card. */
   summary: string;
   status: 'available' | 'planned';
+  /** Marks the tool as beta (pending clinical validation). Remove once signed off. */
+  beta?: boolean;
   /** Icon shown on the home page card. */
   icon: Icon;
   /** Rendered at the tool's route. Omit for `planned` tools. */
@@ -42,6 +44,7 @@ export const tools: ToolDef[] = [
     summary:
       'Align a patient’s repeat medications onto a common run-out date and calculate the one-off bridging quantity per item.',
     status: 'available',
+    beta: true,
     icon: CalculatorIcon,
     component: RepeatSync,
   },
@@ -51,6 +54,7 @@ export const tools: ToolDef[] = [
     summary:
       'Estimate creatinine clearance (Cockcroft–Gault) for renal dose adjustment, with actual / ideal / adjusted body weight.',
     status: 'available',
+    beta: true,
     icon: HeartPulseIcon,
     component: CrCl,
   },
@@ -60,6 +64,7 @@ export const tools: ToolDef[] = [
     summary:
       'Check eligibility for NHS tirzepatide (Mounjaro) weight management against the South East London pathway.',
     status: 'available',
+    beta: true,
     icon: ScalesIcon,
     component: WeightMgmt,
   },
@@ -69,6 +74,7 @@ export const tools: ToolDef[] = [
     summary:
       'CHA₂DS₂-VASc stroke risk and ORBIT bleeding risk (NICE NG196) to support anticoagulation decisions.',
     status: 'available',
+    beta: true,
     icon: PulseIcon,
     component: AfRisk,
   },
@@ -78,6 +84,7 @@ export const tools: ToolDef[] = [
     summary:
       'Total a patient’s anticholinergic cognitive burden from their medicines (ACB scale); flags a score ≥3.',
     status: 'available',
+    beta: true,
     icon: BrainIcon,
     component: AcbCalc,
   },
@@ -87,6 +94,7 @@ export const tools: ToolDef[] = [
     summary:
       'Approximate oral morphine equivalent (OME) and opioid switching guide, with cross-tolerance and safety caveats.',
     status: 'available',
+    beta: true,
     icon: ConvertIcon,
     component: OpioidConvert,
   },

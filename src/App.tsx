@@ -7,6 +7,7 @@ import Signup from './pages/Signup';
 import Admin from './pages/Admin';
 import { AuthProvider } from './auth/AuthContext';
 import RequireAuth from './auth/RequireAuth';
+import { BetaBanner } from './components/BetaBadge';
 import { availableTools } from './tools/registry';
 
 /** Everything except /login and /signup lives behind the auth gate + shell. */
@@ -31,7 +32,18 @@ export default function App() {
           <Route path="/" element={<Home />} />
           {availableTools.map((tool) => {
             const Tool = tool.component;
-            return <Route key={tool.slug} path={`/tools/${tool.slug}`} element={<Tool />} />;
+            return (
+              <Route
+                key={tool.slug}
+                path={`/tools/${tool.slug}`}
+                element={
+                  <>
+                    {tool.beta && <BetaBanner />}
+                    <Tool />
+                  </>
+                }
+              />
+            );
           })}
           <Route path="/tools" element={<Navigate to="/" replace />} />
           <Route path="/admin" element={<Admin />} />
