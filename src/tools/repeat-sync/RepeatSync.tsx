@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import {
   calculateSync,
@@ -9,7 +9,7 @@ import {
   type SyncSettings,
 } from './syncEngine';
 import { buildSummaryText } from './summary';
-import { medicationNames, packSizesFor } from './dmdData';
+import { packSizesFor, searchMedications } from './dmdData';
 import References from '../../components/References';
 import {
   CalculatorIcon,
@@ -28,13 +28,7 @@ import {
   ArrowRightIcon,
 } from '../../components/icons';
 
-const DEFAULT_CYCLE = 28;
-
-// Native <datalist> renders every option into the DOM; cap it so a full dm+d
-// extract (tens of thousands of products) can't bloat the page. A production
-// build with the whole dictionary should switch to a filtered combobox.
-const DATALIST_CAP = 1000;
-const datalistNames = medicationNames.slice(0, DATALIST_CAP);
+const DEFAULT_CYCLE = 56;
 
 let rowCounter = 0;
 function newRow(cycleLength = DEFAULT_CYCLE): MedicationInput {
@@ -146,12 +140,6 @@ export default function RepeatSync() {
 
   return (
     <div>
-      <datalist id="dmd-medications">
-        {datalistNames.map((name) => (
-          <option key={name} value={name} />
-        ))}
-      </datalist>
-
       <div className="no-print mb-5">
         <Link
           to="/"
@@ -238,7 +226,7 @@ export default function RepeatSync() {
               Days of supply = current quantity ÷ daily dose. Each included item is topped up to a
               common run-out horizon (its bridging quantity), then the ongoing quantity per cycle =
               cycle length × daily dose. Quantities are always rounded up — to whole units, or whole
-              packs when a pack size is given. The default 28-day cycle reflects common UK
+              packs when a pack size is given. The default 56-day (2-monthly) cycle reflects common UK
               repeat-prescribing practice; variable-dose / PRN items are listed but excluded from the
               calculation.
             </>
@@ -392,20 +380,15 @@ function MedicationRow({
 
       <div className="grid items-start gap-3 sm:grid-cols-12">
         <Field className="sm:col-span-4" label="Medication">
-          <input
-            type="text"
+          <MedicationCombobox
             value={med.name}
-            placeholder="e.g. Amlodipine 5mg tablets"
-            list="dmd-medications"
-            aria-label={`Medication name, row ${index + 1}`}
-            onChange={(e) => {
-              const name = e.target.value;
+            ariaLabel={`Medication name, row ${index + 1}`}
+            onChange={(name) => {
               const patch: Partial<MedicationInput> = { name };
               const packs = packSizesFor(name);
               if (med.packSize == null && packs.length === 1) patch.packSize = packs[0];
               onChange(patch);
             }}
-            className={inputCls()}
           />
         </Field>
 
@@ -707,6 +690,102 @@ function Stat({
       >
         {value}
       </dd>
+    </div>
+  );
+}
+
+function MedicationCombobox({
+  value,
+  ariaLabel,
+  onChange,
+}: {
+  value: string;
+  ariaLabel: string;
+  onChange: (name: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const suggestions = useMemo(() => searchMedications(value, 50), [value]);
+  const showList = open && suggestions.length > 0;
+
+  function choose(name: string) {
+    onChange(name);
+    setOpen(false);
+    setActive(-1);
+  }
+
+  function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setOpen(true);
+      setActive((a) => Math.min(a + 1, suggestions.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActive((a) => Math.max(a - 1, 0));
+    } else if (e.key === 'Enter' && showList && active >= 0) {
+      e.preventDefault();
+      choose(suggestions[active]);
+    } else if (e.key === 'Escape') {
+      setOpen(false);
+      setActive(-1);
+    }
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative"
+      onBlur={(e) => {
+        if (!containerRef.current?.contains(e.relatedTarget as Node | null)) {
+          setOpen(false);
+          setActive(-1);
+        }
+      }}
+    >
+      <input
+        type="text"
+        role="combobox"
+        aria-expanded={showList}
+        aria-autocomplete="list"
+        autoComplete="off"
+        value={value}
+        placeholder="Start typing, e.g. ramipril"
+        aria-label={ariaLabel}
+        onChange={(e) => {
+          onChange(e.target.value);
+          setOpen(true);
+          setActive(-1);
+        }}
+        onFocus={() => setOpen(true)}
+        onKeyDown={onKeyDown}
+        className={inputCls()}
+      />
+      {showList && (
+        <ul
+          role="listbox"
+          className="absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 text-sm shadow-lg"
+        >
+          {suggestions.map((name, i) => (
+            <li key={name} role="option" aria-selected={i === active}>
+              <button
+                type="button"
+                tabIndex={-1}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => choose(name)}
+                onMouseEnter={() => setActive(i)}
+                className={[
+                  'block w-full px-3 py-1.5 text-left',
+                  i === active ? 'bg-teal-50 text-teal-800' : 'text-slate-700 hover:bg-slate-50',
+                ].join(' ')}
+              >
+                {name}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

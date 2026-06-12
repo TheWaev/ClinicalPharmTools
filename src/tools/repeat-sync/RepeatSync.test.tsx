@@ -6,12 +6,20 @@ import RepeatSync from './RepeatSync';
 
 // Decouple the UI tests from the bundled dm+d dataset, which is refreshed from
 // TRUD weekly (so real pack sizes/names change). These fixtures keep the
-// datalist + pack-size-prefill behaviour deterministic.
-vi.mock('./dmdData', () => ({
-  medicationNames: ['Amlodipine 5mg tablets', 'Ramipril 5mg capsules'],
-  packSizesFor: (name: string) =>
-    name.trim().toLowerCase() === 'amlodipine 5mg tablets' ? [28] : [],
-}));
+// combobox + pack-size-prefill behaviour deterministic.
+vi.mock('./dmdData', () => {
+  const names = ['Amlodipine 5mg tablets', 'Ramipril 5mg capsules'];
+  return {
+    medicationNames: names,
+    packSizesFor: (name: string) =>
+      name.trim().toLowerCase() === 'amlodipine 5mg tablets' ? [28] : [],
+    searchMedications: (q: string, limit = 50) => {
+      const ql = q.trim().toLowerCase();
+      if (ql.length < 2) return [];
+      return names.filter((n) => n.toLowerCase().includes(ql)).slice(0, limit);
+    },
+  };
+});
 
 function renderTool() {
   return render(
@@ -78,13 +86,16 @@ describe('RepeatSync UI', () => {
     expect(screen.getAllByText(/choose a target synchronisation date/i).length).toBeGreaterThan(0);
   });
 
-  it('offers dm+d medication suggestions via a datalist', () => {
+  it('surfaces dm+d suggestions via the combobox, including non-A drugs', async () => {
+    const user = userEvent.setup();
     renderTool();
-    const datalist = document.getElementById('dmd-medications');
-    expect(datalist).not.toBeNull();
-    const values = Array.from(datalist!.querySelectorAll('option')).map((o) => o.value);
-    expect(values).toContain('Amlodipine 5mg tablets');
-    expect(values.length).toBeGreaterThan(0);
+    const input = screen.getByLabelText('Medication name, row 1');
+    // Typing a query that is not at the start of the alphabet must still match
+    // (regression: the old capped datalist only showed A–drugs).
+    await user.type(input, 'ramip');
+    const option = await screen.findByRole('option', { name: /ramipril 5mg capsules/i });
+    await user.click(within(option).getByRole('button'));
+    expect(input).toHaveValue('Ramipril 5mg capsules');
   });
 
   it('prefills the pack size when a known dm+d medication is entered', () => {

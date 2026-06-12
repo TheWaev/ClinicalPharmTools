@@ -52,7 +52,6 @@ export const tools: ToolDef[] = [
     summary:
       'Align a patient’s repeat medications onto a common run-out date and calculate the one-off bridging quantity per item.',
     status: 'available',
-    beta: true,
     icon: CalculatorIcon,
     component: RepeatSync,
   },

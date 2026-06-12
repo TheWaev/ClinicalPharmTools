@@ -22,7 +22,7 @@ no analytics.
 | QRISK3 — CVD Risk | ✅ Available | 10-year cardiovascular risk (QRISK®3-2017, ClinRisk LGPL) for primary prevention; runs locally, no postcode. Validated against the 48 original-C-algorithm reference cases. |
 | Corticosteroid Equivalence | ✅ Available | Convert between glucocorticoids by anti-inflammatory dose (BNF); adrenal-suppression prompts. |
 
-> All tools are currently flagged **Beta** pending clinical validation.
+> Tools are flagged **Beta** pending clinical validation, except Repeat Medication Synchronisation, which has been signed off.
 
 ## Tech stack
 
