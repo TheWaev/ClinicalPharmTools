@@ -152,6 +152,36 @@ describe('qrisk3 public wrapper', () => {
     const f2 = qrisk3({ ...baseInput, sex: 'female', erectileDysfunction: true });
     expect(f1.score).toBe(f2.score);
   });
+
+  it('treats a blank SBP standard deviation as 0 (matches qrisk.org)', () => {
+    // A blank SBP-SD must mean "no measured variability" (0), not the mean.
+    const blank = qrisk3({ ...baseInput, sbpSd: null });
+    const zero = qrisk3({ ...baseInput, sbpSd: 0 });
+    expect(blank.score).toBe(zero.score);
+  });
+
+  it('reproduces a real qrisk.org case (no postcode)', () => {
+    // Female 56, White, light smoker, 166 cm / 84 kg, chol ratio 1.9, SBP 140,
+    // SBP-SD blank, AF + treated hypertension, no deprivation → qrisk.org = 17.8%,
+    // healthy person 3.6%.
+    const r = qrisk3({
+      ...baseInput,
+      sex: 'female',
+      age: 56,
+      ethnicity: 1,
+      smoking: 2,
+      heightCm: 166,
+      weightKg: 84,
+      cholRatio: 1.9,
+      sbp: 140,
+      sbpSd: null,
+      townsend: null,
+      af: true,
+      treatedHypertension: true,
+    });
+    expect(r.score).toBe(17.8);
+    expect(r.healthyScore).toBe(3.6);
+  });
 });
 
 describe('qrisk3 public pipeline vs original C algorithm (end-to-end, 48 cases)', () => {

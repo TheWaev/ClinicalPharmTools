@@ -347,7 +347,9 @@ function buildRaw(input: Qrisk3Input): RawInput {
     fh_cvd: b(input.familyHistoryCvd),
     rati: input.cholRatio ?? m.rati,
     sbp: input.sbp ?? m.sbp,
-    sbps5: input.sbpSd ?? m.sbps5,
+    // QRISK3 treats a blank SBP standard deviation as 0 (no measured
+    // variability) — NOT the population mean. Matches the official calculator.
+    sbps5: input.sbpSd ?? 0,
     smoke_cat: input.smoking,
     town: input.townsend ?? 0,
   };
@@ -382,14 +384,14 @@ export function qrisk3(input: Qrisk3Input): Qrisk3Result {
   const raw = buildRaw(input);
   const score = round1(rawScore(input.sex, raw));
 
-  // "Healthy" reference: same age/sex/ethnicity, no conditions, never-smoker,
-  // and average BMI / cholesterol / blood pressure / deprivation.
-  const m = MEAN[input.sex];
+  // "Healthy person" reference, as defined by the official calculator: same
+  // age/sex/ethnicity, no clinical conditions, never-smoker, cholesterol ratio
+  // 4.0, a stable systolic BP of 125 (SD 0), BMI 25 and average deprivation.
   const healthyRaw: RawInput = {
     age: input.age as number,
     b_AF: 0, b_atypicalantipsy: 0, b_corticosteroids: 0, b_impotence2: 0, b_migraine: 0,
     b_ra: 0, b_renal: 0, b_semi: 0, b_sle: 0, b_treatedhyp: 0, b_type1: 0, b_type2: 0,
-    bmi: m.bmi, ethrisk: input.ethnicity, fh_cvd: 0, rati: m.rati, sbp: m.sbp, sbps5: m.sbps5,
+    bmi: 25, ethrisk: input.ethnicity, fh_cvd: 0, rati: 4, sbp: 125, sbps5: 0,
     smoke_cat: 0, town: 0,
   };
   const healthyScore = round1(rawScore(input.sex, healthyRaw));

@@ -349,7 +349,7 @@ export default function Qrisk3() {
 
       <div className="mt-5">
         <References
-          note="QRISK3 estimates risk in people aged 25–84 without existing CVD. It is not for people with type 1 diabetes under 25, established CVD, or familial hypercholesterolaemia. An optional postcode is matched on your device to a sector-level Townsend deprivation score (England & Wales, 2011 census, Open Government Licence) — the postcode is never stored or transmitted, and if it is omitted or unrecognised the population average is used."
+          note="QRISK3 estimates risk in people aged 25–84 without existing CVD. It is not for people with type 1 diabetes under 25, established CVD, or familial hypercholesterolaemia. An optional postcode is matched on your device to a sector-level Townsend deprivation score (England & Wales, 2011 census, Open Government Licence) — the postcode is never stored or transmitted, and if it is omitted or unrecognised the population average is used. This open Townsend value is an estimate and can differ slightly from the deprivation score the official calculator uses, so the result may vary by a fraction of a percent."
           items={REFERENCES}
         />
       </div>
