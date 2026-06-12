@@ -11,6 +11,7 @@ vi.mock('./dmdData', () => {
   const names = ['Amlodipine 5mg tablets', 'Ramipril 5mg capsules'];
   return {
     medicationNames: names,
+    TOP_PRIMARY_CARE_DRUGS: ['Amlodipine', 'Ramipril'],
     packSizesFor: (name: string) =>
       name.trim().toLowerCase() === 'amlodipine 5mg tablets' ? [28] : [],
     searchMedications: (q: string, limit = 50) => {

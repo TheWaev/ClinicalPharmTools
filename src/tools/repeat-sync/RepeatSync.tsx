@@ -9,7 +9,7 @@ import {
   type SyncSettings,
 } from './syncEngine';
 import { buildSummaryText } from './summary';
-import { packSizesFor, searchMedications } from './dmdData';
+import { packSizesFor, searchMedications, TOP_PRIMARY_CARE_DRUGS } from './dmdData';
 import References from '../../components/References';
 import {
   CalculatorIcon,
@@ -707,13 +707,27 @@ function MedicationCombobox({
   const [active, setActive] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const suggestions = useMemo(() => searchMedications(value, 50), [value]);
+  // Before the user has typed enough to search dm+d (<2 chars), offer the common
+  // primary-care drugs (filtered by any leading character). Picking one is a
+  // "narrow" step — it fills the generic name and keeps the list open so the
+  // dm+d search can then surface the specific strength/form.
+  const query = value.trim().toLowerCase();
+  const quickPick = query.length < 2;
+  const suggestions = useMemo(
+    () =>
+      quickPick
+        ? TOP_PRIMARY_CARE_DRUGS.filter((d) => d.toLowerCase().startsWith(query))
+        : searchMedications(value, 50),
+    [value, quickPick, query],
+  );
   const showList = open && suggestions.length > 0;
 
   function choose(name: string) {
     onChange(name);
-    setOpen(false);
     setActive(-1);
+    // Narrowing to a generic keeps the list open to pick a strength; selecting a
+    // full dm+d product closes it.
+    setOpen(quickPick);
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
@@ -767,6 +781,14 @@ function MedicationCombobox({
           role="listbox"
           className="absolute z-20 mt-1 max-h-64 w-full overflow-auto rounded-lg border border-slate-200 bg-white py-1 text-sm shadow-lg"
         >
+          {quickPick && (
+            <li
+              aria-hidden
+              className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-slate-400"
+            >
+              Common in primary care
+            </li>
+          )}
           {suggestions.map((name, i) => (
             <li key={name} role="option" aria-selected={i === active}>
               <button

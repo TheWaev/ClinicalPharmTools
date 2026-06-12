@@ -33,6 +33,54 @@ export const isSampleData: boolean = /sample data/i.test(data.source);
 
 export const medicationNames: string[] = data.items.map((i) => i.name);
 
+/**
+ * Commonly prescribed primary-care medicines (generic names), shown as the
+ * initial type-ahead suggestions before the user types. Picking one narrows the
+ * full dm+d search to that drug so the right strength/form can be chosen. These
+ * are deliberately generic stems (no strength) and are ordered by rough
+ * prescribing volume / clinical grouping.
+ */
+export const TOP_PRIMARY_CARE_DRUGS: string[] = [
+  'Atorvastatin',
+  'Simvastatin',
+  'Amlodipine',
+  'Ramipril',
+  'Lisinopril',
+  'Losartan',
+  'Bisoprolol',
+  'Atenolol',
+  'Bendroflumethiazide',
+  'Indapamide',
+  'Furosemide',
+  'Levothyroxine sodium',
+  'Metformin',
+  'Gliclazide',
+  'Omeprazole',
+  'Lansoprazole',
+  'Aspirin',
+  'Clopidogrel',
+  'Apixaban',
+  'Salbutamol',
+  'Beclometasone',
+  'Montelukast',
+  'Sertraline',
+  'Citalopram',
+  'Fluoxetine',
+  'Mirtazapine',
+  'Amitriptyline',
+  'Gabapentin',
+  'Pregabalin',
+  'Naproxen',
+  'Co-codamol',
+  'Paracetamol',
+  'Amoxicillin',
+  'Doxycycline',
+  'Colecalciferol',
+  'Ferrous sulfate',
+  'Folic acid',
+  'Tamsulosin',
+];
+
 const byName = new Map(data.items.map((i) => [i.name.trim().toLowerCase(), i]));
 
 /** Pack sizes recorded for an exact medication name (case-insensitive). */
