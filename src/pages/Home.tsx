@@ -7,16 +7,20 @@ export default function Home() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-white px-6 py-10 text-slate-900 shadow-card sm:px-10 sm:py-12">
+      <section className="relative mb-8 overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-teal-600 via-teal-600 to-cyan-700 px-6 py-10 text-white shadow-card sm:px-10 sm:py-12">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl"
+        />
         <div className="relative max-w-2xl">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-medium text-teal-800 shadow-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-medium ring-1 ring-inset ring-white/20">
             <ShieldIcon className="h-3.5 w-3.5" weight="fill" />
             Runs in your browser — no information you enter is recorded
           </span>
-          <h1 className="mt-4 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
+          <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl">
             Clinical pharmacy tools
           </h1>
-          <p className="mt-3 max-w-xl text-base leading-relaxed text-slate-600">
+          <p className="mt-3 text-base leading-relaxed text-teal-50/90">
             A focused suite of calculators for clinical pharmacy teams. Fast, accurate, and built to
             be safe — every calculation runs locally and nothing is stored or transmitted.
           </p>
