@@ -15,7 +15,7 @@ export default function Header() {
     <header className="no-print sticky top-0 z-20 border-b border-slate-200/70 bg-white/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 px-4 py-3 sm:px-6">
         <Link to="/" className="group flex items-center gap-3 rounded-lg">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-cyan-600 text-white shadow-sm shadow-teal-600/20 transition group-hover:scale-105">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-teal-700 shadow-sm transition group-hover:scale-105">
             <PillIcon className="h-5 w-5" weight="bold" />
           </span>
           <span className="flex flex-col leading-tight">

@@ -7,7 +7,7 @@
     -webkit-text-size-adjust: 100%;
   }
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply text-slate-900 antialiased;
   }
   /* Visible focus styles for keyboard users (WCAG 2.1 AA). */
   :focus-visible {
@@ -23,4 +23,95 @@
   .no-print {
     display: none !important;
   }
+}
+
+/* =========================================================================
+   Neumorphism theme — a full-app "soft UI" skin.
+   The whole interface is a single stone-grey material; elements are shaped by
+   light (raised) and shadow (inset) rather than by borders or fills. Applied by
+   redefining the NEUTRAL surface utilities the components already use, so the
+   semantic colour panels (teal / amber / red / emerald) keep their meaning —
+   important for clinical safety cues. Plain rules after @tailwind win over the
+   utility layer, so !important is only used where Tailwind sets the same prop.
+   ========================================================================= */
+:root {
+  --neu: #e7e5e4; /* warm stone base material */
+  --neu-dark: #c4c0bd; /* bottom-right shadow */
+  --neu-light: #ffffff; /* top-left highlight */
+  --neu-text: #1e2938;
+  --neu-primary: #006666;
+  --neu-border: #d8d5d2;
+}
+
+body {
+  background: var(--neu) !important;
+  color: var(--neu-text);
+}
+
+/* Monospace display type (retro-futuristic). System stack — no web-font
+   network request, to honour the app's offline / no-runtime-network rule. */
+h1,
+h2,
+h3,
+.tabular-nums {
+  font-family: ui-monospace, 'JetBrains Mono', 'Cascadia Code', Menlo, Consolas, monospace;
+}
+
+/* Neutral surfaces collapse into the single stone material. */
+.bg-white,
+.bg-white\/80,
+.bg-white\/70,
+.bg-white\/60,
+.bg-slate-50,
+.bg-slate-50\/60,
+.bg-slate-50\/50,
+.bg-slate-50\/40,
+.bg-slate-100 {
+  background-color: var(--neu) !important;
+}
+
+/* Borders recede; kept very faint so table rows / dividers stay legible. */
+.border,
+.border-slate-200,
+.border-slate-200\/70,
+.border-slate-300,
+.border-slate-100,
+.border-dashed {
+  border-color: var(--neu-border) !important;
+}
+
+/* Raised surfaces: light top-left, dark bottom-right. */
+.shadow-sm {
+  box-shadow: -4px -4px 9px var(--neu-light), 4px 4px 11px var(--neu-dark) !important;
+}
+.shadow-card {
+  box-shadow: -6px -6px 13px var(--neu-light), 7px 7px 16px var(--neu-dark) !important;
+}
+.shadow-lg {
+  box-shadow: -6px -6px 14px var(--neu-light), 8px 8px 18px var(--neu-dark) !important;
+}
+
+/* Form fields are pressed into the surface (inset). */
+input:not([type='checkbox']):not([type='radio']),
+select,
+textarea {
+  background-color: var(--neu) !important;
+  border-color: transparent !important;
+  box-shadow: inset 3px 3px 6px var(--neu-dark), inset -3px -3px 7px var(--neu-light) !important;
+}
+input:not([type='checkbox']):not([type='radio']):focus,
+select:focus,
+textarea:focus {
+  box-shadow: inset 3px 3px 6px var(--neu-dark), inset -3px -3px 7px var(--neu-light),
+    0 0 0 2px rgb(0 102 102 / 0.35) !important;
+}
+
+/* Primary (teal) buttons keep their colour for affordance but gain a raised
+   edge so they still read as the single material. */
+.bg-teal-600 {
+  background-color: var(--neu-primary) !important;
+  box-shadow: -3px -3px 8px var(--neu-light), 4px 4px 9px var(--neu-dark) !important;
+}
+.hover\:bg-teal-700:hover {
+  background-color: #005252 !important;
 }
