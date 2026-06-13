@@ -16,7 +16,7 @@ export default function Header() {
     <header className="no-print sticky top-0 z-20 border-b border-slate-200/70 bg-white/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 px-4 py-3 sm:px-6">
         <Link to="/" className="group flex items-center gap-3 rounded-lg">
-          <Logo className="h-9 w-9 rounded-xl shadow-e1 transition group-hover:scale-105" />
+          <Logo className="h-9 w-auto text-brand-600 transition group-hover:scale-105" />
           <span className="flex flex-col leading-tight">
             <span className="text-base font-semibold tracking-tight text-slate-900">
               ClinicalPharmTools

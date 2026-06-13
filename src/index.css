@@ -122,6 +122,22 @@
   }
 }
 
+/* Logo cog: a gentle continuous rotation about its own centre; speeds up when
+   the logo is hovered. Disabled under prefers-reduced-motion (rule below). */
+@keyframes logo-cog-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.logo-cog {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: logo-cog-spin 8s linear infinite;
+}
+.group:hover .logo-cog {
+  animation-duration: 2.5s;
+}
+
 /* Subtle entrance for freshly-computed results (stage D will apply the class). */
 @keyframes result-in {
   from {
